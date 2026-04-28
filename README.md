@@ -1,6 +1,6 @@
 *This is a template repository for this organization. Start by replacing the placeholder for the project name with its actual title.*
 
-# [Validating of Multivariate AI Solution for Automating Price Quotations]
+# Validating of Multivariate AI Solution for Automating Price Quotations
 
 ## Summary
 | Company Name | [OÜ Print Best](https://printbest.eu/et/) |
@@ -60,9 +60,14 @@ The estimated investment for implementing AI/robotics solutions ranges from €5
 ### Lessons Learned
 The validated AI-powered quotation system successfully addressed the initial challenge of slow and inefficient quoting processes. By automating data analysis, cost estimation, and quote generation, the solution has potential to significantly improve speed, accuracy, and scalability according to our tests. Real-time quoting potentially reduces response times by up to 70%, minimizes human errors, and ensures consistent pricing, directly solving the inefficiencies of manual processes.
 Key lessons learned:
+
 • Data Quality is Crucial. The accuracy of AI-generated quotes depends heavily on high-quality input data. Poor data can lead to inaccuracies, highlighting the importance of robust data management practices. Print Best had very good data for some client segments but very little data on others. This reflected on quotation test results.
+
 • Integration Challenges. Incorporating AI into existing v2 sales and production requires careful planning to ensure seamless functionality and avoid disruptions as the company doesnot want to overhaul the whole process overnight but introduce AI step by step.
-• Continuous Improvement. The AI system’s ability to learn from real-world results proved vital for refining pricing models and improving profitability over time. During the demonstration project, it was discovered that the data was more clustered and less uniform than initially anticipated, with significant variations in order specifications, customer preferences, and production requirements. This complexity highlighted the need to embed knowhow about the printing process into the AI system. Incorporating detailed knowledge, such as which machines were required for specific orders and how different materials impacted production costs, proved crucial for ensuring accurate quotes and operational feasibility. This integration of technical expertise allowed the AI to handle diverse inquiries effectively and output more precise quotes
+
+• Continuous Improvement. The AI system’s ability to learn from real-world results proved vital for refining pricing models and improving profitability over time. 
+
+During the demonstration project, it was discovered that the data was more clustered and less uniform than initially anticipated, with significant variations in order specifications, customer preferences, and production requirements. This complexity highlighted the need to embed knowhow about the printing process into the AI system. Incorporating detailed knowledge, such as which machines were required for specific orders and how different materials impacted production costs, proved crucial for ensuring accurate quotes and operational feasibility. This integration of technical expertise allowed the AI to handle diverse inquiries effectively and output more precise quotes
 
 # Custom agreement with the AIRE team
 *If you have a unique project or specific requirements that don't fit neatly into the Docker file or description template options, we welcome custom agreements with our AIRE team. This option allows flexibility in collaborating with us to ensure your project's needs are met effectively.*
