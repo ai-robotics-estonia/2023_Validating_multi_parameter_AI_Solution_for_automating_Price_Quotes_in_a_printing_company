@@ -1,5 +1,3 @@
-*This is a template repository for this organization. Start by replacing the placeholder for the project name with its actual title.*
-
 # Validating of Multivariate AI Solution for Automating Price Quotations
 
 ## Summary
