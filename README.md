@@ -67,6 +67,92 @@ Key lessons learned:
 
 During the demonstration project, it was discovered that the data was more clustered and less uniform than initially anticipated, with significant variations in order specifications, customer preferences, and production requirements. This complexity highlighted the need to embed knowhow about the printing process into the AI system. Incorporating detailed knowledge, such as which machines were required for specific orders and how different materials impacted production costs, proved crucial for ensuring accurate quotes and operational feasibility. This integration of technical expertise allowed the AI to handle diverse inquiries effectively and output more precise quotes
 
+# Technical implementation
+
+A sanitised reference implementation of the pipeline is published under
+[`code/`](code/). It contains no real credentials, MongoDB cluster
+identifiers or proprietary business field names — only the reusable
+building blocks needed to reproduce the architecture on a new dataset.
+
+## Architecture
+
+The pipeline answers a single question: *given a new request for a price
+quotation, what markup percentage should be applied?* It does so by
+combining structured similarity search with a multi-step LLM reasoning
+chain.
+
+```
+                       ┌──────────────────────────┐
+   New request  ──►    │ 1. Clean + serialise to  │
+   (JSON doc)          │    YAML (token-dense)    │
+                       └─────────────┬────────────┘
+                                     │
+                       ┌─────────────▼────────────┐
+                       │ 2. OpenAI embedding      │
+                       │    (text-embedding-3-    │
+                       │     large)               │
+                       └─────────────┬────────────┘
+                                     │
+                       ┌─────────────▼────────────┐
+                       │ 3. MongoDB Atlas         │
+                       │    $vectorSearch with    │
+                       │    structured filters    │
+                       └─────────────┬────────────┘
+                                     │
+                       ┌─────────────▼────────────┐
+                       │ 4. OpenAI Assistants     │
+                       │    file-search reasoning │
+                       │    over N similar docs   │
+                       └─────────────┬────────────┘
+                                     │
+                       ┌─────────────▼────────────┐
+                       │ 5. Numeric markup %      │
+                       │    + risk alternative    │
+                       └──────────────────────────┘
+```
+
+## Key design choices
+
+- **YAML instead of raw JSON for the LLM** — historical bidding documents
+  are deeply nested with many empty fields. Stripping empty values and
+  converting to YAML cut the per-document token count substantially
+  without information loss. See `code/src/document_utils.py`.
+- **Hybrid similarity** — embeddings alone retrieved too many off-topic
+  documents (e.g. wrong binding type or order quantity off by an order of
+  magnitude). The vector search is therefore always paired with an Atlas
+  `filter` on a small set of structured attributes; the embedding only
+  picks the ordering inside that pre-filtered slice. See
+  `code/src/vector_search.py`.
+- **Four-message Assistants thread, not one prompt** — the model is asked
+  in sequence to (a) identify discriminating variables, (b) build a
+  comparison table, (c) reason about a percentage, (d) emit the bare
+  number. Splitting the chain produced markedly more stable numeric
+  output than a single combined prompt. See
+  `code/src/assistants_pipeline.py`.
+- **Exponential-backoff retry on the embedding call** — embedding a
+  batch of historical documents in a short window regularly hit the
+  per-minute rate limit during validation runs.
+  `tenacity` retries up to six times with a randomised wait between 1 s
+  and 60 s.
+- **Polling-based Flask UI** — the assistant chain takes tens of seconds
+  per document, so the front-end starts the work in a background thread
+  and polls `/progress` for `(step, message)` updates. The shipped
+  back-end is a placeholder so the UI can be evaluated without an OpenAI
+  account.
+
+## What is **not** in this repository
+
+The original prototype additionally contained:
+
+- The real `.env` (OpenAI key, MongoDB Atlas credentials).
+- A snapshot of the production MongoDB collections (biddings, orders,
+  worksheets, billing).
+- Notebooks with the actual validation results, including customer IDs
+  and accepted markup percentages.
+
+None of these are or will be redistributed. The published code is the
+methodology, not the data.
+
 # Custom agreement with the AIRE team
 *If you have a unique project or specific requirements that don't fit neatly into the Docker file or description template options, we welcome custom agreements with our AIRE team. This option allows flexibility in collaborating with us to ensure your project's needs are met effectively.*
 
